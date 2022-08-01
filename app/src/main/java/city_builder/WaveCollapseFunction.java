@@ -15,6 +15,7 @@ public class WaveCollapseFunction {
     private HashMap<Integer, Restrictions> restrictions;
     private boolean invalidGrid;
     private Random rand;
+    private boolean isSolved;
 
     public WaveCollapseFunction(int[][] initialGrid, HashSet<Integer> possibleValues, HashMap<Integer, Restrictions> restrictions) {
         if (!(invalidGrid = initialGrid == null)) {
@@ -22,6 +23,9 @@ public class WaveCollapseFunction {
             grid = new ArrayList<>(initialGrid.length);
             this.restrictions = restrictions;
             rand = new Random();
+            // Assume the given grid isn't solved
+            // TODO: Check that this is actually true
+            isSolved = false;
 
             for (int i = 0; i < initialGrid.length; i++) {
                 ArrayList<HashSet<Integer>> row = new ArrayList<>(initialGrid[i].length);
@@ -45,8 +49,7 @@ public class WaveCollapseFunction {
                 for (int[] coords : setTiles) {
                     int x = coords[1];
                     int y = coords[0];
-                    Restrictions restriction = restrictions.get(initialGrid[y][x]);
-                    propagate(grid, x, y, restriction);
+                    propagate(grid, x, y);
                 }
             }
         }
@@ -75,13 +78,14 @@ public class WaveCollapseFunction {
                         possibleValues.clear();
                         possibleValues.add(randomValue);
 
-                        Restrictions restriction = restrictions.get(randomValue);
-                        propagate(grid, x, y, restriction);
+                        return propagate(grid, x, y);
                     }
                 }
             }
         }
-        return false;
+        // All cells have value set so assume board is solved
+        isSolved = true;
+        return true;
     }
 
     public boolean solve() {
@@ -91,36 +95,89 @@ public class WaveCollapseFunction {
         return false;
     }
 
-    // TODO: Have propagate call recurcivly if a cell has been collapsed to one value after propagation
-    private void propagate(ArrayList<ArrayList<HashSet<Integer>>> grid, int x, int y, Restrictions restriction) {
+    /**
+     * @param grid The cell grid to be propagated over
+     * @param x The x coord of the cell being propagated
+     * @param y The y coord of the cell being propagated
+     * @return False if it resulted in an invalid board and True otherwise
+     * 
+     * Progagates the restrictions of the value of a cell at the given coords.
+     * Assumes that the cell at (x,y) has at least one value. 
+     */
+    private boolean propagate(ArrayList<ArrayList<HashSet<Integer>>> grid, int x, int y) {
+        // Get the restrictions of the value of the cell being propagated
+        Restrictions restriction = restrictions.get(grid.get(y).get(x).iterator().next());
+
         if (y - 1 >= 0) {
-            grid.get(y - 1).get(x).removeAll(restriction.getNorthRestrictions());
-            if (grid.get(y - 1).get(x).isEmpty()) {
-                invalidGrid = true;
-                return;
+            HashSet<Integer> cell = grid.get(y - 1).get(x);
+            // Check if cell already has a set value and skip if it does
+            if (cell.size() > 1) {
+                cell.removeAll(restriction.getNorthRestrictions());
+
+                // Check if no possibilties are left
+                if (cell.isEmpty()) {
+                    invalidGrid = true;
+                    return false;
+                }
+
+                // If only one possible value then recursively properage it
+                if (cell.size() == 1) {
+                    propagate(grid, x, y - 1);
+                }
             }
         }
+
         if (y + 1 < grid.size()) {
-            grid.get(y + 1).get(x).removeAll(restriction.getSouthRestrictions());
-            if (grid.get(y + 1).get(x).isEmpty()) {
-                invalidGrid = true;
-                return;
+            HashSet<Integer> cell = grid.get(y + 1).get(x);
+            // Check if cell already has a set value and skip if it does
+            if (cell.size() > 1) {
+                cell.removeAll(restriction.getSouthRestrictions());
+
+                if (cell.isEmpty()) {
+                    invalidGrid = true;
+                    return false;
+                }
+
+                if (cell.size() == 1) {
+                    propagate(grid, x, y + 1);
+                }
             }
         }
+
         if (x - 1 >= 0) {
-            grid.get(y).get(x - 1).removeAll(restriction.getWestRestrictions());
-            if (grid.get(y).get(x - 1).isEmpty()) {
-                invalidGrid = true;
-                return;
+            HashSet<Integer> cell = grid.get(y).get(x - 1);
+            // Check if cell already has a set value and skip if it does
+            if (cell.size() > 1) {
+                cell.removeAll(restriction.getWestRestrictions());
+
+                if (cell.isEmpty()) {
+                    invalidGrid = true;
+                    return false;
+                }
+
+                if (cell.size() == 1) {
+                    propagate(grid, x - 1, y);
+                }
             }
         }
+
         if (x + 1 < grid.get(y).size()) {
-            grid.get(y).get(x + 1).removeAll(restriction.getEastRestrictions());
-            if (grid.get(y).get(x + 1).isEmpty()) {
-                invalidGrid = true;
-                return;
+            HashSet<Integer> cell = grid.get(y).get(x + 1);
+            // Check if cell already has a set value and skip if it does
+            if (cell.size() > 1) {
+                cell.removeAll(restriction.getEastRestrictions());
+
+                if (cell.isEmpty()) {
+                    invalidGrid = true;
+                    return false;
+                }
+
+                if (cell.size() == 1) {
+                    propagate(grid, x + 1, y);
+                }
             }
         }
+        return true;
     }
 
     public String printGrid() {

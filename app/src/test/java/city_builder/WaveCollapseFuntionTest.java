@@ -66,4 +66,10 @@ public class WaveCollapseFuntionTest {
         WaveCollapseFunction wcf = new WaveCollapseFunction(initialGrid, possibleValues, restrictions);
         assertEquals(expectedOutput, wcf.printGrid());
     }
+
+    @Test void wcfStep() {
+        initialGrid[0][0] = 1;
+        WaveCollapseFunction wcf = new WaveCollapseFunction(initialGrid, possibleValues, restrictions);
+        assertTrue(wcf.step());
+    }
 }
