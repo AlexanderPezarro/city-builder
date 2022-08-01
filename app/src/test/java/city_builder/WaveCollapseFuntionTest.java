@@ -67,9 +67,25 @@ public class WaveCollapseFuntionTest {
         assertEquals(expectedOutput, wcf.printGrid());
     }
 
-    @Test void wcfStep() {
+    @Test void wcfStepWithBlankInitialGrid() {
+        WaveCollapseFunction wcf = new WaveCollapseFunction(initialGrid, possibleValues, restrictions);
+        assertTrue(wcf.step());
+    }
+
+    @Test void wcfStepWithOneSetValue() {
         initialGrid[0][0] = 1;
         WaveCollapseFunction wcf = new WaveCollapseFunction(initialGrid, possibleValues, restrictions);
         assertTrue(wcf.step());
+    }
+
+    @Test void wcfSolveWithBlankInitialGrid() {
+        WaveCollapseFunction wcf = new WaveCollapseFunction(initialGrid, possibleValues, restrictions);
+        assertTrue(wcf.solve());
+    }
+
+    @Test void wcfSolveWithOneSetValue() {
+        initialGrid[0][0] = 1;
+        WaveCollapseFunction wcf = new WaveCollapseFunction(initialGrid, possibleValues, restrictions);
+        assertTrue(wcf.solve());
     }
 }

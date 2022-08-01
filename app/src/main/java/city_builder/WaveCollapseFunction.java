@@ -90,9 +90,12 @@ public class WaveCollapseFunction {
 
     public boolean solve() {
         if (!invalidGrid) {
-            
+            while (!isSolved) {
+                // If step() returns false return else loop
+                if (!step()) return false;
+            }
         }
-        return false;
+        return true;
     }
 
     /**
