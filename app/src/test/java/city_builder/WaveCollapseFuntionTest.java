@@ -1,8 +1,11 @@
 package city_builder;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import city_builder.logic.Restrictions;
+import city_builder.logic.WaveCollapseFunction;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Arrays;

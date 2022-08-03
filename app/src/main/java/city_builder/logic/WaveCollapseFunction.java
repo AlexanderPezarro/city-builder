@@ -1,4 +1,4 @@
-package city_builder;
+package city_builder.logic;
 
 import java.util.ArrayList;
 import java.util.HashMap;

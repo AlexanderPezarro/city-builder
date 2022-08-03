@@ -26,7 +26,7 @@ dependencies {
 
 application {
     // Define the main class for the application.
-    mainClass = 'city_builder.App'
+    mainClass = 'city_builder.gui.App'
 }
 
 tasks.named('test') {

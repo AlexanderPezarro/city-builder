@@ -4,6 +4,9 @@
 package city_builder;
 
 import org.junit.jupiter.api.Test;
+
+import city_builder.gui.App;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class AppTest {
